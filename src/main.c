@@ -11,6 +11,10 @@ int numeros[100001];
 int auxiliar[100001];
 int n = 0;
 
+/*	Mergesort: recebe como parametros dois indices de posicoes no vetor numeros.
+ *	Divide a porcao do vetor limitada pelos indices em duas partes, chama o 
+ *	mergesort recursivamente nessas duas partes e as intercala.
+ */
 void mergesort(int inicio, int fim){
 	if (inicio < fim){
 		int meio = (inicio+fim)/2;
@@ -20,6 +24,13 @@ void mergesort(int inicio, int fim){
 	}
 }
 
+
+/*	Intercala: recebe como parametros tres indices de posicoes no vetor numeros.
+ *	Primeiro, copia a primeira porcao do vetor (do inicio ao meio) no vetor 
+ *	auxiliar de maneira direta e depois copia a segunda parte do vetor (do meio
+ *	ao fim) de maneira inversa. Depois, utiliza os indices i e j para intercalar
+ *	as duas partes do vetor auxiliar, ordenando os numeros.
+ */
 void intercala(int inicio, int meio, int fim){
 	pthread_mutex_lock(&trava);
 	for (int i = inicio; i <= meio; i++)
@@ -43,10 +54,13 @@ void intercala(int inicio, int meio, int fim){
 	}
 }
 
+
+/*	Worker: distribui o quarto do vetor que sera tarefa de uma thread. Chama
+ *	a funcao mergesort para esse um quarto dos numeros.
+ */
 void* worker(void *arg) {
 
 	int tamanho = (int *)arg;
-	//0 -0, 1-2, 3-4, 5-6
 
 	pthread_mutex_lock(&trava);
 	int inicio = (tamanho*n)/4;
@@ -59,6 +73,12 @@ void* worker(void *arg) {
   	return NULL;
 }
 
+
+/*	Cria quatro threads, atribuindo a cada uma um quarto do vetor numeros
+ *	(dentro da funcao worker). Depois, espera que todas as threads finalizem
+ *	suas tarefas. Finalmente, intercala os quatro quartos de vetor e imprime
+ *	o resultado ordenado.
+ */
 int main() {
 
 	int i = 0;
